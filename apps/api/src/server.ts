@@ -6,6 +6,8 @@ import setupRoutes from "./routes";
 const app = express();
 const port = env.port;
 
+app.use(express.json());
+
 setupRoutes(app);
 
 app.listen(port, () => {
