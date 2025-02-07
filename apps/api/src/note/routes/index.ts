@@ -17,6 +17,10 @@ const noteRoutes = (app: Application) => {
   app.get("/user/:id/notes/:noteId", (req, res) => {
     controller.getNote(req, res);
   });
+
+  app.put("/user/:id/notes/:noteId", (req, res) => {
+    controller.update(req, res);
+  });
 };
 
 export default noteRoutes;
