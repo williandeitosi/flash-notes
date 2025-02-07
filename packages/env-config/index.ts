@@ -6,6 +6,7 @@ import { z } from "zod";
 const envSchema = z.object({
   port: z.string().default(process.env.PORT || "3000"),
   database_url: z.string().default(process.env.DATABASE_URL || ""),
+  jwt_secret: z.string().default(process.env.JWT_SECRET || ""),
 });
 
 const _env = envSchema.safeParse(process.env);
