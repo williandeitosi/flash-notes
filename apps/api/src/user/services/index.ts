@@ -1,11 +1,12 @@
 import bcrypt from "bcrypt";
-import type { UserType } from "../../../../../packages/auth-schema";
+import jwt from "jsonwebtoken";
+import type { LoginType, UserType } from "../../../../../packages/auth-schema";
+import { env } from "../../../../../packages/env-config";
 import { db } from "../../../prisma/db";
 
 export class UserService {
   private async findByEmail(email: string) {
-    const user = await db.user.findUnique({ where: { email } });
-    return !!user;
+    return await db.user.findUnique({ where: { email } });
   }
 
   async createUser({ email, password, name }: UserType) {
@@ -24,5 +25,29 @@ export class UserService {
     const { password: _, ...withoutPassword } = user;
 
     return withoutPassword;
+  }
+
+  async loginUser({ email, password }: LoginType) {
+    const user = await this.findByEmail(email);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new Error("Invalid credentials");
+    }
+
+    const payload = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
+
+    const token = jwt.sign(payload, env.jwt_secret, { expiresIn: "10h" });
+
+    return { user: payload, token };
   }
 }
