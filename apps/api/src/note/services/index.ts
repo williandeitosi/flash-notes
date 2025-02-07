@@ -39,4 +39,18 @@ export class NoteService {
       },
     });
   }
+
+  async updateNote(
+    userId: number,
+    noteId: number,
+    description: string,
+    title: string
+  ) {
+    const update = await db.note.update({
+      where: { userId, id: noteId },
+      data: { title, description },
+    });
+
+    return update;
+  }
 }
