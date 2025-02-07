@@ -1,7 +1,10 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import type { LoginType, UserType } from "../../../../../packages/auth-schema";
 import { env } from "../../../../../packages/env-config";
+import type {
+  LoginType,
+  UserType,
+} from "../../../../../packages/models/auth-schema";
 import { db } from "../../../prisma/db";
 
 export class UserService {
