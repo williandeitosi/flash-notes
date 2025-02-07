@@ -1,36 +1,39 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
-import {
-  loginSchema,
-  userSchema,
-} from "../../../../../packages/models/auth-schema/index";
-import type { UserService } from "../services";
+import type { NoteService } from "../services";
+import { noteSchema } from "./../../../../../packages/models/note-schema/index";
 
-export class UserController {
-  constructor(private service: UserService) {}
+export class NoteController {
+  constructor(private service: NoteService) {}
 
   async create(req: Request, res: Response) {
     try {
-      const parseData = userSchema.safeParse(req.body);
+      const { id } = req.params;
+      const userId = Number(id);
+      const parseData = noteSchema.safeParse(req.body);
 
       if (!parseData.success) {
         return res.status(400).json({
-          message: "Invalid data",
-          errors: parseData.error.errors,
+          message: "Invalid information",
+          erro: parseData.error.errors,
         });
       }
 
-      const { name, email, password } = parseData.data;
+      const { title, description } = parseData.data;
 
-      const newUser = await this.service.createUser({ email, password, name });
+      const newNote = await this.service.createNote(userId, {
+        title,
+        description,
+      });
 
-      res
-        .status(202)
-        .json({ message: "User created successfully!", user: newUser });
+      res.status(202).json({
+        message: "Note created successfully!",
+        ...newNote,
+      });
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({
-          message: "Erro de validação",
+          message: "validation error",
           errors: error.errors.map((err) => ({
             field: err.path.join("."),
             message: err.message,
@@ -45,22 +48,12 @@ export class UserController {
     }
   }
 
-  async login(req: Request, res: Response) {
+  async getAll(req: Request, res: Response) {
     try {
-      const parseData = loginSchema.safeParse(req.body);
-
-      if (!parseData.success) {
-        return res.status(400).json({
-          message: "Invalid data",
-          errors: parseData.error.errors,
-        });
-      }
-
-      const { email, password } = parseData.data;
-
-      const { token, user } = await this.service.loginUser({ email, password });
-
-      res.status(202).json({ message: "Login successfully", token, user });
+      const { id } = req.params;
+      const userId = Number(id);
+      const allNote = await this.service.getllAllNotes(userId);
+      res.status(200).json({ allNote });
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({
