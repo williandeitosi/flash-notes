@@ -21,4 +21,8 @@ export class NoteService {
 
     return newNote;
   }
+
+  async getllAllNotes(userId: number) {
+    return await db.note.findMany({ where: { userId } });
+  }
 }
