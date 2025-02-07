@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
-import type { UserService } from "../services";
 import {
   loginSchema,
   userSchema,
-} from "./../../../../../packages/auth-schema/index";
+} from "../../../../../packages/models/auth-schema/index";
+import type { UserService } from "../services";
 
 export class UserController {
   constructor(private service: UserService) {}
@@ -64,7 +64,7 @@ export class UserController {
     } catch (error) {
       if (error instanceof ZodError) {
         return res.status(400).json({
-          message: "Erro de validação",
+          message: "validation error",
           errors: error.errors.map((err) => ({
             field: err.path.join("."),
             message: err.message,
