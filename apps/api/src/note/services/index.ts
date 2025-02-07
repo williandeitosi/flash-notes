@@ -2,16 +2,21 @@ import type { NoteType } from "../../../../../packages/models/note-schema";
 import { db } from "../../../prisma/db";
 
 export class NoteService {
-  async createNote(userId: number, { title, description }: NoteType) {
+  private async findByTitle(title: string, userId: number) {
     const lowerTitle = title.toLowerCase();
-    const titleExists = await db.note.findFirst({
+    const findTitle = await db.note.findFirst({
       where: {
         title: lowerTitle,
         userId,
       },
     });
+    return { findTitle, lowerTitle };
+  }
 
-    if (titleExists) {
+  async createNote(userId: number, { title, description }: NoteType) {
+    const { findTitle, lowerTitle } = await this.findByTitle(title, userId);
+
+    if (findTitle) {
       throw new Error("Title already exists!");
     }
 
@@ -22,7 +27,30 @@ export class NoteService {
     return newNote;
   }
 
-  async getllAllNotes(userId: number) {
+  async getAllNotes(userId: number) {
     return await db.note.findMany({ where: { userId } });
+  }
+
+  async getNote(noteId: number, userId: number) {
+    return await db.note.findFirst({
+      where: {
+        id: noteId,
+        userId,
+      },
+    });
+  }
+
+  async updateNote(
+    userId: number,
+    noteId: number,
+    description: string,
+    title: string
+  ) {
+    const update = await db.note.update({
+      where: { userId, id: noteId },
+      data: { title, description },
+    });
+
+    return update;
   }
 }
