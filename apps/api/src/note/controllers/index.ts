@@ -47,4 +47,28 @@ export class NoteController {
       return res.status(500).json({ error: "Internal Server Error" });
     }
   }
+
+  async getAll(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const userId = Number(id);
+      const allNote = await this.service.getllAllNotes(userId);
+      res.status(200).json({ allNote });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({
+          message: "validation error",
+          errors: error.errors.map((err) => ({
+            field: err.path.join("."),
+            message: err.message,
+          })),
+        });
+      }
+      if (error instanceof Error) {
+        return res.status(400).json({ error: error.message });
+      }
+
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+  }
 }
