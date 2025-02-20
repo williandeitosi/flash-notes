@@ -4,7 +4,7 @@ import axios from "axios";
 export async function getNotes() {
   try {
     const response = await axios.get<{
-      allNote: { title: string; description: string }[];
+      allNote: { title: string; description: string; id: number }[];
     }>("http://localhost:3333/user/1/notes");
     return response.data.allNote;
   } catch (error) {
