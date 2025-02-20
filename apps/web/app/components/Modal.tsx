@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import { addNote } from "../actions/note";
 
@@ -14,15 +14,20 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onNoteAdded }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen) {
+      setTitle("");
+      setDescription("");
+    }
+  }, [isOpen]);
 
   const handleSubmit = async () => {
     await addNote(title, description);
-    setTitle("");
-    setDescription("");
     onNoteAdded();
     onClose();
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4">
