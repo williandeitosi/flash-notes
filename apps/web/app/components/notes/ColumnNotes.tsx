@@ -8,7 +8,11 @@ import Button from "../Button";
 import Modal from "../Modal";
 import Card from "../card";
 
-const ColumnNotes = () => {
+interface ColumnNotesProps {
+  onSelectedNote: (id: number) => void;
+}
+
+const ColumnNotes: React.FC<ColumnNotesProps> = ({ onSelectedNote }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: notes = [], refetch } = useQuery({
@@ -19,6 +23,10 @@ const ColumnNotes = () => {
   const toggleModal = useCallback(() => {
     setIsModalOpen((prev) => !prev);
   }, []);
+
+  const handleNoteId = (id: number) => {
+    onSelectedNote(id);
+  };
 
   return (
     <div className="col-span-3 border-purple-900 border-r-2 overflow-hidden rounded-lg flex flex-col">
@@ -32,6 +40,8 @@ const ColumnNotes = () => {
       <div className="h-full overflow-y-auto flex flex-col gap-2">
         {notes.map((note, index) => (
           <Card
+            onClick={handleNoteId}
+            id={note.id}
             key={note.id}
             title={note.title}
             description={note.description}
