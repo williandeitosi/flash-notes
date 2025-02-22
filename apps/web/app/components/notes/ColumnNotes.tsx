@@ -6,7 +6,7 @@ import { FaSearch } from "react-icons/fa";
 import { getNotes } from "../../actions/note";
 import Button from "../Button";
 import Modal from "../Modal";
-import Card from "../card";
+import Card from "./card";
 
 interface ColumnNotesProps {
   onSelectedNote: (id: number) => void;
@@ -37,7 +37,7 @@ const ColumnNotes: React.FC<ColumnNotesProps> = ({ onSelectedNote }) => {
         </div>
       </div>
 
-      <div className="h-full overflow-y-auto flex flex-col gap-2">
+      <div className="h-full overflow-y-auto flex flex-col gap-4">
         {notes.map((note, index) => (
           <Card
             onClick={handleNoteId}
