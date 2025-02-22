@@ -20,7 +20,6 @@ const ShowNote: React.FC<INoteId> = ({ noteId }) => {
 
   if (isLoading) return <div>Carregando...</div>;
   if (isError) return <div>Erro ao carregar a nota.</div>;
-  console.log(note);
 
   return (
     <div className="p-8 overflow-y-auto h-full">
