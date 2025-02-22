@@ -28,7 +28,10 @@ export class NoteService {
   }
 
   async getAllNotes(userId: number) {
-    return await db.note.findMany({ where: { userId } });
+    return await db.note.findMany({
+      where: { userId },
+      orderBy: { createAt: "desc" },
+    });
   }
 
   async getNote(noteId: number, userId: number) {
