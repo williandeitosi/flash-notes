@@ -1,6 +1,19 @@
 "use server";
 import axios from "axios";
 
+export interface Note {
+  id: number;
+  title: string;
+  description: string;
+  createAt: string;
+  updateAt: string;
+  userId: number;
+}
+
+export interface GetNoteResponse {
+  getNote: Note;
+}
+
 export async function getNotes() {
   try {
     const response = await axios.get<{
@@ -10,6 +23,18 @@ export async function getNotes() {
   } catch (error) {
     console.error("Erro ao buscar notas:", error);
     return [];
+  }
+}
+
+export async function getOnlyNote(id: number): Promise<GetNoteResponse | null> {
+  try {
+    const response = await axios.get<GetNoteResponse>(
+      `http://localhost:3333/user/1/notes/${id}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar nota:", error);
+    return null;
   }
 }
 
