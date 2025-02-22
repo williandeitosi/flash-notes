@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import { addNote } from "../actions/note";
@@ -13,18 +12,45 @@ interface ModalProps {
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onNoteAdded }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
       setTitle("");
       setDescription("");
+      setError(null);
     }
   }, [isOpen]);
 
   const handleSubmit = async () => {
-    await addNote(title, description);
-    onNoteAdded();
-    onClose();
+    if (!title.trim()) {
+      setError("O título é obrigatório");
+      return;
+    }
+
+    if (!description.trim()) {
+      setError("A descrição é obrigatória");
+      return;
+    }
+
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      await addNote(title.trim(), description.trim());
+
+      setTitle("");
+      setDescription("");
+
+      onNoteAdded();
+
+      onClose();
+    } catch (err) {
+      setError("Erro ao criar nota. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -37,12 +63,19 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onNoteAdded }) => {
           <button
             className="hover:bg-zinc-700 p-2 rounded-lg transition-colors"
             onClick={onClose}
+            disabled={isSubmitting}
           >
             <IoCloseSharp size={24} className="text-red-500" />
           </button>
         </div>
 
         <div className="p-6 space-y-6">
+          {error && (
+            <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded">
+              {error}
+            </div>
+          )}
+
           <div className="space-y-2">
             <label
               className="text-white text-sm font-medium block"
@@ -56,8 +89,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onNoteAdded }) => {
               type="text"
               id="title"
               name="title"
-              className="w-full px-4 py-2 bg-zinc-700 border border-zinc-600 rounded-lg text-white focus:outline-none"
+              className="w-full px-4 py-2 bg-zinc-700 border border-zinc-600 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
               placeholder="Enter the title of your note..."
+              disabled={isSubmitting}
             />
           </div>
 
@@ -74,17 +108,30 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, onNoteAdded }) => {
               id="description"
               name="description"
               rows={8}
-              className="w-full px-4 py-2 bg-zinc-700 border border-zinc-600 rounded-lg text-white focus:outline-none"
+              className="w-full px-4 py-2 bg-zinc-700 border border-zinc-600 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
               placeholder="Enter the content of your note..."
+              disabled={isSubmitting}
             />
           </div>
 
           <div className="flex justify-end space-x-4 pt-4">
             <button
-              onClick={handleSubmit}
-              className="px-4 py-2 bg-gradient-to-r from-sky-700 to-purple-900 text-white rounded-lg"
+              onClick={onClose}
+              className="px-4 py-2 bg-zinc-700 text-white rounded-lg hover:bg-zinc-600 transition-colors"
+              disabled={isSubmitting}
             >
-              Salvar
+              Cancelar
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className={`px-4 py-2 bg-gradient-to-r from-sky-700 to-purple-900 text-white rounded-lg ${
+                isSubmitting
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:from-sky-600 hover:to-purple-800"
+              }`}
+            >
+              {isSubmitting ? "Salvando..." : "Salvar"}
             </button>
           </div>
         </div>
