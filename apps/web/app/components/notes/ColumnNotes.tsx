@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { getNotes } from "../../actions/note";
 import Button from "../Button";
@@ -12,17 +12,33 @@ interface ColumnNotesProps {
   onSelectedNote: (id: number) => void;
 }
 
+interface INote {
+  id: number;
+  title: string;
+  description: string;
+}
+
 const ColumnNotes: React.FC<ColumnNotesProps> = ({ onSelectedNote }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { data: notes = [], refetch } = useQuery({
+  const {
+    data: notes = [],
+    refetch,
+    isLoading,
+  } = useQuery<INote[]>({
     queryKey: ["notes"],
     queryFn: getNotes,
+    staleTime: 60000,
+    refetchOnWindowFocus: false,
   });
 
-  const toggleModal = useCallback(() => {
+  if (isLoading) {
+    return <div>Carregando notas...</div>;
+  }
+
+  const toggleModal = () => {
     setIsModalOpen((prev) => !prev);
-  }, []);
+  };
 
   const handleNoteId = (id: number) => {
     onSelectedNote(id);
@@ -38,7 +54,7 @@ const ColumnNotes: React.FC<ColumnNotesProps> = ({ onSelectedNote }) => {
       </div>
 
       <div className="h-full overflow-y-auto flex flex-col gap-4">
-        {notes.map((note, index) => (
+        {notes.map((note) => (
           <Card
             onClick={handleNoteId}
             id={note.id}
