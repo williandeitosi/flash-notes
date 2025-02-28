@@ -5,7 +5,7 @@ import { env } from "../../../packages/env-config";
 import setupRoutes from "./routes";
 
 const app = express();
-const port = env.port;
+const port = env.port || 3333;
 
 app.use(express.json());
 app.use(cors());
