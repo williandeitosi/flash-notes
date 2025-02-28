@@ -3,7 +3,7 @@ import { ZodError } from "zod";
 import {
   loginSchema,
   userSchema,
-} from "../../../../../packages/models/auth-schema/index";
+} from "../../../../../packages/models/auth-schema";
 import type { UserService } from "../services";
 
 export class UserController {
